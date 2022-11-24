@@ -1,8 +1,8 @@
 import axios from 'axios';
-import SpotList from './SpotList.json';
+import SpotList from '../assets/spotList.json';
 
-const Key = '51567348436d6d6d363472416a7653';
-const baseURL = 'http://openapi.seoul.go.kr:8088/' + Key + '/xml/citydata/1/5/';
+const Key = process.env.REACT_APP_SPOT_KEY;
+const baseURL = process.env.REACT_APP_SPOT_ROOT + Key + process.env.REACT_APP_SPOT_ARG;
 const visitedCheck = [];
 const getCloseSpot = current_position => {
     return SpotList.map(spot => {
