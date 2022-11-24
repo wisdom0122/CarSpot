@@ -3,22 +3,34 @@ import axios from 'axios';
 import XMLParser from 'react-xml-parser';
 import SpotList from './SpotList.json';
 import styled from 'styled-components';
-const GetData = () => {
+const GetData = ({ position }) => {
     const [data, setData] = useState({});
+
     const [loading, setLoading] = useState(null);
     const [error, setError] = useState(null);
 
     const reshapeData = res => {
+        console.log('get data');
+
         const PRK_STTS = [];
-        res.map(e => {
-            new XMLParser().parseFromString(e.data).children[2].children[3].children.map(e => PRK_STTS.push(e.children));
+        console.log('try');
+        res.map((e, index) => {
+            let a = 0;
+            let b = 0;
+            new XMLParser().parseFromString(e.data).children[2].children[3].children.map(e => {
+                PRK_STTS.push(e.children);
+            });
+            console.log(PRK_STTS[index]);
         });
-        // console.log(PRK_STTS);
+
         setData(PRK_STTS);
+        console.log(PRK_STTS);
     };
     useEffect(() => {
+        console.log(position);
+
         const Key = '51567348436d6d6d363472416a7653';
-        const baseURL = 'http://openapi.seoul.go.kr:8088/' + Key + '/xml/citydata/1/99/';
+        const baseURL = 'http://openapi.seoul.go.kr:8088/' + Key + '/xml/citydata/1/5/';
         const getApi = async () => {
             try {
                 // console.log('try');
@@ -29,7 +41,7 @@ const GetData = () => {
                 //로딩중
                 setLoading(true);
 
-                await axios.all(SpotList.map(L => axios.get(`${baseURL}${L.spot}`))).then(res => reshapeData(res));
+                // await axios.all(SpotList.map(L => axios.get(`${baseURL}${L.spot}`))).then(res => reshapeData(res));
             } catch (error) {
                 // console.log('error');
                 //에러표시
@@ -44,7 +56,7 @@ const GetData = () => {
     if (loading) return <Notice>로딩중..</Notice>;
     if (error) return <Notice>에러</Notice>;
     if (!data) return null;
-    return <Notice>데이터 GET 성공</Notice>;
+    // return PRK_STTS;
 };
 
 const Notice = styled.div`
