@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import icon from "./parkingIcon.png";
+import icon from "../images/parkingIcon.png";
 import styled from "styled-components";
 import SpotList from "../SpotList.json";
 
@@ -78,7 +78,7 @@ function Main() {
 
     // 다중 마커 표시
     for (let key in MARKER_SPRITE_POSITION) {
-      let num = parseInt(key);
+      // let num = parseInt(key);
       let position = new naver.maps.LatLng(
         southWest.lat() + latSpan * Math.random(),
         southWest.lng() + lngSpan * Math.random()
