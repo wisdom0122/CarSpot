@@ -8,40 +8,6 @@ function Main() {
   let markers = []; // 마커들의 정보들을 담을 배열
   let infoWindows = []; // 공영 주차장 정보들을 담을 배열
 
-  const MARKER_SPRITE_X_OFFSET = 29;
-  const MARKER_SPRITE_Y_OFFSET = 50;
-  const MARKER_SPRITE_POSITION = {
-    A0: [0, 0],
-    B0: [MARKER_SPRITE_X_OFFSET, 0],
-    C0: [MARKER_SPRITE_X_OFFSET * 2, 0],
-    D0: [MARKER_SPRITE_X_OFFSET * 3, 0],
-    E0: [MARKER_SPRITE_X_OFFSET * 4, 0],
-    F0: [MARKER_SPRITE_X_OFFSET * 5, 0],
-    G0: [MARKER_SPRITE_X_OFFSET * 6, 0],
-    H0: [MARKER_SPRITE_X_OFFSET * 7, 0],
-    I0: [MARKER_SPRITE_X_OFFSET * 8, 0],
-
-    A1: [0, MARKER_SPRITE_Y_OFFSET],
-    B1: [MARKER_SPRITE_X_OFFSET, MARKER_SPRITE_Y_OFFSET],
-    C1: [MARKER_SPRITE_X_OFFSET * 2, MARKER_SPRITE_Y_OFFSET],
-    D1: [MARKER_SPRITE_X_OFFSET * 3, MARKER_SPRITE_Y_OFFSET],
-    E1: [MARKER_SPRITE_X_OFFSET * 4, MARKER_SPRITE_Y_OFFSET],
-    F1: [MARKER_SPRITE_X_OFFSET * 5, MARKER_SPRITE_Y_OFFSET],
-    G1: [MARKER_SPRITE_X_OFFSET * 6, MARKER_SPRITE_Y_OFFSET],
-    H1: [MARKER_SPRITE_X_OFFSET * 7, MARKER_SPRITE_Y_OFFSET],
-    I1: [MARKER_SPRITE_X_OFFSET * 8, MARKER_SPRITE_Y_OFFSET],
-
-    A2: [0, MARKER_SPRITE_Y_OFFSET * 2],
-    B2: [MARKER_SPRITE_X_OFFSET, MARKER_SPRITE_Y_OFFSET * 2],
-    C2: [MARKER_SPRITE_X_OFFSET * 2, MARKER_SPRITE_Y_OFFSET * 2],
-    D2: [MARKER_SPRITE_X_OFFSET * 3, MARKER_SPRITE_Y_OFFSET * 2],
-    E2: [MARKER_SPRITE_X_OFFSET * 4, MARKER_SPRITE_Y_OFFSET * 2],
-    F2: [MARKER_SPRITE_X_OFFSET * 5, MARKER_SPRITE_Y_OFFSET * 2],
-    G2: [MARKER_SPRITE_X_OFFSET * 6, MARKER_SPRITE_Y_OFFSET * 2],
-    H2: [MARKER_SPRITE_X_OFFSET * 7, MARKER_SPRITE_Y_OFFSET * 2],
-    I2: [MARKER_SPRITE_X_OFFSET * 8, MARKER_SPRITE_Y_OFFSET * 2],
-  };
-
   // const InfoBox = styled.div`
   //   width: 200px;
   //   height: 200px;
@@ -59,12 +25,6 @@ function Main() {
 
     const map = new naver.maps.Map(mapRef.current, mapOptions);
 
-    let bounds = map.getBounds(),
-      southWest = bounds.getSW(),
-      northEast = bounds.getNE(),
-      lngSpan = northEast.lng() - southWest.lng(),
-      latSpan = northEast.lat() - southWest.lat();
-
     // 지도 처음 위치 마커 표시
     // let markerOptions = {
     //   position: new naver.maps.LatLng(37.540765, 126.946055),
@@ -77,13 +37,10 @@ function Main() {
     // let marker = new naver.maps.Marker(markerOptions);
 
     // 다중 마커 표시
-    for (let key in MARKER_SPRITE_POSITION) {
-      // let num = parseInt(key);
+    for (let key = 0; key < SpotList.length; key++) {
       let position = new naver.maps.LatLng(
-        southWest.lat() + latSpan * Math.random(),
-        southWest.lng() + lngSpan * Math.random()
-        // SpotList[num].lat,
-        // SpotList[num].lng
+        SpotList[key].lat,
+        SpotList[key].lng
       );
 
       var marker = new naver.maps.Marker({
@@ -96,10 +53,10 @@ function Main() {
         // zIndex: 100,
       });
 
-      var infoWindow = new naver.maps.InfoWindow({
+      let infoWindow = new naver.maps.InfoWindow({
         content:
           '<div style="width:150px;text-align:center;padding:10px;">The Letter is <b>"' +
-          key.substr(0, 1) +
+          key +
           '"</b>.</div>',
       });
 
@@ -139,8 +96,9 @@ function Main() {
       };
     };
 
-    for (var i = 0; i < markers.length; i++) {
+    for (let i = 0; i < markers.length; i++) {
       naver.maps.Event.addListener(markers[i], "click", openInfoBox(i)); // 클릭한 마커 핸들러
+      // console.log("marker " + i + "" + markers[i].getPosition());
     }
   }, []);
 
