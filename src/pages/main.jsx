@@ -43,7 +43,7 @@ function Main() {
         SpotList[key].lng
       );
 
-      var marker = new naver.maps.Marker({
+      let marker = new naver.maps.Marker({
         map: map,
         position: position,
         title: key,
@@ -91,7 +91,7 @@ function Main() {
           infoWindow.close();
         } else {
           infoWindow.open(map, marker);
-          map.setCenter(marker.getPosition());
+          map.setCenter(marker.getPosition()); // 화면의 중심점을 클릭한 마커로 변경한다.
         }
       };
     };
