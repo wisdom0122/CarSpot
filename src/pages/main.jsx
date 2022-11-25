@@ -16,7 +16,7 @@ import find_way from '../images/find_way_icon.png';
 import green_car from '../images/car_mark_green.png';
 import yellow_car from '../images/car_mark_yellow.png';
 
-const setMultipleMarkers = ({naver, storeMarkers, storeInfoWindows}, map) => {
+const setMultipleMarkers = (naver, storeMarkers, storeInfoWindows, map) => {
     for (let key = 0; key < SpotList.length; key++) {
         let position = new naver.maps.LatLng(
             SpotList[key].lat,
@@ -44,7 +44,7 @@ const setMultipleMarkers = ({naver, storeMarkers, storeInfoWindows}, map) => {
     }
 };
 
-const setInfoBox = ({naver, storeMarkers, storeInfoWindows}, map, seq) => {
+const setInfoBox = (storeMarkers, storeInfoWindows, map, seq) => {
     return function (e) {
         let marker = storeMarkers[seq];
         let infoWindow = storeInfoWindows[seq];
@@ -60,7 +60,6 @@ const setInfoBox = ({naver, storeMarkers, storeInfoWindows}, map, seq) => {
 
 function Main() {
     const mapRef = useRef();
-
     let storeMarkers = [];
     let storeInfoWindows = [];
 
@@ -80,13 +79,13 @@ function Main() {
 
         const map = new naver.maps.Map(mapRef.current, mapOptions);
 
-        setMultipleMarkers({naver, storeMarkers, storeInfoWindows}, map);
+        setMultipleMarkers(naver, storeMarkers, storeInfoWindows, map);
 
         for (let i = 0; i < storeMarkers.length; i++) {
             naver.maps.Event.addListener(
                 storeMarkers[i],
                 'click',
-                setInfoBox({naver, storeMarkers, storeInfoWindows}, map, i)
+                setInfoBox(storeMarkers, storeInfoWindows, map, i)
             );
         }
     }, []);
