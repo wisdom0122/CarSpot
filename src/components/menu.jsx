@@ -11,23 +11,24 @@ const Menu = ({ setVisible }) => {
     return (
         <MenuPage>
             <MenuItem>
-                <img src={green_car} />
+                <img src={green_car} alt="" />
                 <h2>CarSpot</h2>
             </MenuItem>
             <MenuItem>
-                <img src={home} />
+                <img src={home} alt="" />
                 <h2>지도 홈</h2>
             </MenuItem>
             <MenuItem>
-                <img src={find_way} />
+                <img src={find_way} alt="" />
                 <h2>길찾기</h2>
             </MenuItem>
             <MenuItem>
                 <img
                     src={cash}
+                    alt=""
                     style={{
                         width: '45px',
-                        height: '45px',
+                        height: '45px'
                     }}
                     onClick={() => {
                         setVisible((prev) => !prev);
@@ -38,9 +39,10 @@ const Menu = ({ setVisible }) => {
             <MenuItem>
                 <img
                     src={more}
+                    alt=""
                     style={{
                         width: '35px',
-                        height: '35px',
+                        height: '35px'
                     }}
                 />
                 <h2>더보기</h2>

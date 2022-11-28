@@ -1,25 +1,15 @@
 import { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 import redIcon from "../images/car_mark_red.png"
 import yellowIcon from "../images/car_mark_yellow.png"
 import greenIcon from "../images/car_mark_green.png"
-import styled from "styled-components";
-
 import Charge from "../components/charge";
 import Menu from "../components/menu";
 
 import SpotList from "../assets/spotList.json";
 
 import * as parkingApi from "../apis/parkingApi.js";
-
-import icon from "../images/parkingIcon.png";
-import cash from "../images/fee_icon.png";
-import more from "../images/more_icon.png";
-import home from "../images/home_icon.png";
 import markerIcon from "../images/parkingIcon.png";
-import red_car from "../images/car_mark_red.png";
-import find_way from "../images/find_way_icon.png";
-import green_car from "../images/car_mark_green.png";
-import yellow_car from "../images/car_mark_yellow.png";
 
 const setMultipleMarkers = (naver, storeMarkers, storeInfoWindows, map) => {
   for (let key = 0; key < SpotList.length; key++) {
@@ -60,6 +50,15 @@ const setInfoBox = (storeMarkers, storeInfoWindows, map, seq) => {
   };
 };
 
+const createMarkerImage = (naver, imageUrl, width, height) => {
+  const marker = new naver.maps.ImageIcon({
+      url: imageUrl,
+      scaledSize: new naver.maps.Size(width, height)
+  });
+
+  return marker;
+}
+
 function Main() {
   const mapRef = useRef();
   let storeMarkers = [];
@@ -81,6 +80,7 @@ function Main() {
 
     const map = new naver.maps.Map(mapRef.current, mapOptions);
 
+
     // 다중 마커 표시
     for (let key = 0; key < SpotList.length; key++) {
       let position = new naver.maps.LatLng(
@@ -89,18 +89,16 @@ function Main() {
       );
 
       // marker 색상 지정
-      const iconColor = SpotList[key].id%2==0 ? redIcon : yellowIcon;
-      const iconSize = new naver.maps.Size(230, 230);
+      const carMarkerIcon = SpotList[key].id%2==0 ? yellowIcon : greenIcon;
+      const iconSize = new naver.maps.Size(30, 30);
 
       let marker = new naver.maps.Marker({
         map: map,
         position: position,
         title: key,
         icon: {
-          url: iconColor, // 현재 사용 중인 마커 이미지
-          size: new naver.maps.Size(230, 230),
-          origin: new naver.maps.Point(0, 0),
-          anchor: new naver.maps.Point(11, 35)
+          url: carMarkerIcon,
+          scaledSize: iconSize
         },
       });
       marker.setZIndex();
@@ -136,7 +134,7 @@ function Main() {
       naver.maps.Event.addListener(storeMarkers[i], "click", openInfoBox(i)); // 클릭한 마커 핸들러
     }
 
-    setMultipleMarkers(naver, storeMarkers, storeInfoWindows, map);
+    // setMultipleMarkers(naver, storeMarkers, storeInfoWindows, map);
 
     for (let i = 0; i < storeMarkers.length; i++) {
       naver.maps.Event.addListener(
@@ -145,9 +143,9 @@ function Main() {
         setInfoBox(storeMarkers, storeInfoWindows, map, i)
       );
     }
-    
-    for (let i = 0; i < markers.length; i++) {
-      naver.maps.Event.addListener(markers[i], "click", openInfoBox(i)); // 클릭한 마커 핸들러
+
+    for (let i = 0; i < storeMarkers.length; i++) {
+      naver.maps.Event.addListener(storeMarkers[i], "click", openInfoBox(i)); // 클릭한 마커 핸들러
     }
   }, []);
 
