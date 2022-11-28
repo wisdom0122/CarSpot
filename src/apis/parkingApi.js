@@ -6,7 +6,7 @@ const Key = process.env.REACT_APP_SPOT_KEY;
 const baseURL = process.env.REACT_APP_SPOT_ROOT + Key + process.env.REACT_APP_SPOT_ARG;
 
 const getCloseSpot = (current_position) => {
-    SpotList.map((spot) => (spot.distance = (current_position.x - spot.lng) ** 2 + (current_position.y - spot.lat) ** 2));
+    SpotList.map((spot) => (spot.distance = (current_position.lng - spot.lng) ** 2 + (current_position.lat - spot.lat) ** 2));
 
     return SpotList.sort(function (a, b) {
         return a.distance - b.distance;
@@ -63,6 +63,7 @@ function xmlToJson(xml) {
 }
 
 export const getDataFromApi = async (current_position, callback) => {
+    //    / console.log(current_position);
     const closeSpot = getCloseSpot(current_position);
     closeSpot.map((e) => (e.check = true));
     // console.log(closeSpot);

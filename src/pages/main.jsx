@@ -1,91 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import redIcon from '../images/car_mark_red.png';
-import yellowIcon from '../images/car_mark_yellow.png';
-import greenIcon from '../images/car_mark_green.png';
 import Charge from '../components/charge';
 import Menu from '../components/menu';
 
 import SpotList from '../assets/spotList.json';
+import Info from '../assets/marker_info.json';
 
 import * as parkingApi from '../apis/parkingApi.js';
+
 import markerIcon from '../images/parkingIcon.png';
+import redIcon from '../images/car_mark_red.png';
+import yellowIcon from '../images/car_mark_yellow.png';
+import greenIcon from '../images/car_mark_green.png';
 
 import '../infowindow/infowindow.css';
 
-const setMultipleMarkers = (naver, storeMarkers, storeInfoWindows, map) => {
-    for (let key = 0; key < SpotList.length; key++) {
-        let position = new naver.maps.LatLng(SpotList[key].lat, SpotList[key].lng);
-
-        let marker = new naver.maps.Marker({
-            map: map,
-            position: position,
-            title: key,
-        });
-
-        let infoWindow = new naver.maps.InfoWindow({
-            content: [
-                '<div class="InfoBox">',
-                '<div class="PopDetail">',
-                '<div class="InfoBoxHead">',
-                '<h3>index</h3>',
-                '</div>',
-                '<div class="Container">',
-                '<div class="Default">',
-                '<div>02-1111-1111</div>',
-                '<div>마포구 마포동</div>',
-                '</div>',
-                '<div class="ParkingState">',
-                '<div class="ParkingStateLeft">',
-                '<div class="ParkingStateUp">전체 주차면</div>',
-                '<div class="ParkingStateDown">1111</div>',
-                '</div>',
-                '<div class="ParkingStateRight">',
-                '<div class="ParkingStateUp">주차 가능면</div>',
-                '<div class="ParkingStateDown">1111</div>',
-                '</div>',
-                '</div>',
-                '</div>',
-            ].join(''),
-            icon: {
-                url: markerIcon,
-            },
-        });
-
-        marker.setIcon(markerIcon);
-        storeMarkers.push(marker);
-        storeInfoWindows.push(infoWindow);
-    }
-};
-
-const setInfoBox = (storeMarkers, storeInfoWindows, map, seq) => {
-    return function (e) {
-        let marker = storeMarkers[seq];
-        let infoWindow = storeInfoWindows[seq];
-
-        if (infoWindow.getMap()) {
-            infoWindow.close();
-        } else {
-            infoWindow.open(map, marker);
-            map.setCenter(marker.getPosition()); // 화면의 중심점을 클릭한 마커로 변경한다.
-        }
-    };
-};
-
 function Main() {
     const mapRef = useRef();
-    let storeMarkers = [];
-    let storeInfoWindows = [];
 
     //map 중심 좌표(position)에 따라 가까운 spot api data 요청함
     const [visible, setVisible] = useState(false);
     const [apiData, setApiData] = useState([]);
-    const [name, setName] = useState();
     const [loading, setLoading] = useState(false);
-    const [position, setPosition] = useState({ x: 37.5005, y: 127.038 });
-    useEffect(() => {
-        console.log(name);
-    }, [name]);
+    const [position, setPosition] = useState({ lng: 37.5005, lat: 127.038 });
 
     useEffect(() => {
         const { naver } = window;
@@ -115,47 +52,30 @@ function Main() {
                 },
             });
             marker.setZIndex();
-            console.log(iconSize.toString());
 
-            let infoWindow = new naver.maps.InfoWindow({
-                content: '<div style="width:150px;text-align:center;padding:10px;">The Letter is <b>"' + key + '"</b>.</div>',
-            });
+            let infoWindow = new naver.maps.InfoWindow({ content: Info.content.join('') });
 
-            storeMarkers.push(marker);
-            storeInfoWindows.push(infoWindow);
-        }
-
-        // 마커 클릭 시 주차장 정보 on/off
-        const openInfoBox = (seq) => {
-            return function (e) {
-                let marker = storeMarkers[seq];
-                let infoWindow = storeInfoWindows[seq];
-
-                if (infoWindow.getMap()) {
-                    infoWindow.close();
-                } else {
-                    infoWindow.open(map, marker);
-                    map.setCenter(marker.getPosition()); // 화면의 중심점을 클릭한 마커로 변경한다.
-                }
+            const openInfoBox = (marker, infoWindow) => {
+                return function (e) {
+                    if (infoWindow.getMap()) {
+                        infoWindow.close();
+                    } else {
+                        infoWindow.open(map, marker);
+                        map.setCenter(marker.getPosition()); // 화면의 중심점을 클릭한 마커로 변경한다.
+                    }
+                };
             };
-        };
 
-        for (let i = 0; i < storeMarkers.length; i++) {
-            naver.maps.Event.addListener(storeMarkers[i], 'click', openInfoBox(i)); // 클릭한 마커 핸들러
+            naver.maps.Event.addListener(marker, 'click', openInfoBox(marker, infoWindow)); // 클릭한 마커 핸들러
         }
 
-        // setMultipleMarkers(naver, storeMarkers, storeInfoWindows, map);
-
-        for (let i = 0; i < storeMarkers.length; i++) {
-            naver.maps.Event.addListener(storeMarkers[i], 'click', setInfoBox(storeMarkers, storeInfoWindows, map, i));
-        }
-
-        for (let i = 0; i < storeMarkers.length; i++) {
-            naver.maps.Event.addListener(storeMarkers[i], 'click', openInfoBox(i)); // 클릭한 마커 핸들러
-        }
+        naver.maps.Event.addDOMListener(mapRef.current, 'click', () => {
+            setPosition({ lat: map.data.map.center.y, lng: map.data.map.center.x });
+        });
     }, []);
 
     useEffect(() => {
+        // real  open api data
         // console.log(apiData);
     }, [apiData]);
 
@@ -177,36 +97,6 @@ function Main() {
         </Page>
     );
 }
-
-// const InfoBox = {
-//     position: 'absolute',
-//     left: '0',
-//     top: '0',
-// };
-
-// const PopDetail = {
-//     position: 'relative',
-//     width: '300px',
-//     height: '380px',
-//     color: '#555',
-//     background: '#fff',
-// };
-
-// const InfoBoxHead = {
-//     position: 'relative',
-//     height: '40px',
-//     backgroundColor: '#f7fcff',
-//     borderbottom: '1px solid #014b7c',
-// };
-
-// const Container = {
-//     padding: '15px 20px 35px',
-// };
-
-// const Default = {
-//     display: 'block',
-//     margin: '6px 0',
-// };
 
 const Page = styled.div`
     scrollbar-width: none;
@@ -230,34 +120,6 @@ const Page = styled.div`
         top: 15px;
     }
 `;
-
-// const Menu = styled.div`
-//   width: 100px;
-//   padding: 20px 0;
-//   background-color: #e8dfca;
-//   opacity: 0.8;
-//   .menuItem {
-//     display: flex;
-//     flex-direction: column;
-//     width: 100px;
-//     height: 100px;
-//     margin: 0 auto 25px auto;
-//     justify-content: center;
-//   }
-//   img {
-//     display: flex;
-//     margin: 0 auto;
-//     width: 40px;
-//     height: 40px;
-//   }
-//   h2 {
-//     margin: 5px 0 0 0;
-//     display: flex;
-//     justify-content: center;
-//     align-items: flex-start;
-//     font-size: 15px;
-//   }
-// `;
 
 const Map = styled.div`
     width: 100vw;
