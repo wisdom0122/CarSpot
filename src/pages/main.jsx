@@ -3,15 +3,13 @@ import styled from 'styled-components';
 import Charge from '../components/charge';
 import Menu from '../components/menu';
 
-import SpotList from '../assets/spotList.json';
 import Info from '../assets/marker_info.json';
 
 import * as parkingApi from '../apis/parkingApi.js';
 
-import markerIcon from '../images/parkingIcon.png';
-import redIcon from '../images/car_mark_red.png';
-import yellowIcon from '../images/car_mark_yellow.png';
-import greenIcon from '../images/car_mark_green.png';
+import redCarMarker from '../images/car_mark_red.png';
+import yellowCarMarker from '../images/car_mark_yellow.png';
+import greenCarMarker from '../images/car_mark_green.png';
 
 import '../infowindow/infowindow.css';
 
@@ -25,6 +23,9 @@ function Main() {
     const [position, setPosition] = useState({ lng: 37.5005, lat: 127.038 });
 
     useEffect(() => {
+        // real  open api data
+        if(apiData.length ==0) return;
+        console.log(apiData);
         const { naver } = window;
 
         const mapOptions = {
@@ -35,20 +36,38 @@ function Main() {
         const map = new naver.maps.Map(mapRef.current, mapOptions);
 
         // 다중 마커 표시
-        for (let key = 0; key < SpotList.length; key++) {
-            let position = new naver.maps.LatLng(SpotList[key].lat, SpotList[key].lng);
+        for (let key = 0; key < apiData.length; key++) {
+            let position = new naver.maps.LatLng(apiData[key].LAT, apiData[key].LNG);
 
             // marker 색상 지정
-            const carMarkerIcon = SpotList[key].id % 2 == 0 ? yellowIcon : greenIcon;
-            const iconSize = new naver.maps.Size(30, 30);
+            // const carMarkerColor = apiData[key].CPCTY % 2 == 0 ? yellowCarMarker : greenCarMarker;
+            // console.log("apiData[key].CUR_PRK_CNT: " + apiData[key].CUR_PRK_CNT);
+            // console.log("apiData[key].CPCTY: " + apiData[key].CPCTY);
+            // 혼잡도(현재 주차중인 차량)
+            const congestion = apiData[key].CUR_PRK_CNT/apiData[key].CPCTY*100;
+            // console.log("congestion: " + congestion);
+            const carMarker = (congestion) => {
+              let carMarkerColor = redCarMarker;
+            //   console.log("type: "+ typeof apiData[key].CUR_PRK_CNT);
+            //   console.log("typeChk: " + typeof apiData[key].CUR_PRK_CNT !== Object);
+                if (congestion >= 50) {
+                    carMarkerColor = greenCarMarker;
+                }
+                else if (congestion >= 30) {
+                    carMarkerColor = yellowCarMarker;
+                }
+                else carMarkerColor = carMarkerColor;
+              return carMarkerColor;
+            }
+            const carMarkerSize = new naver.maps.Size(30, 30);
 
             let marker = new naver.maps.Marker({
                 map: map,
                 position: position,
                 title: key,
                 icon: {
-                    url: carMarkerIcon,
-                    scaledSize: iconSize,
+                    url: carMarker(congestion),
+                    scaledSize: carMarkerSize,
                 },
             });
             marker.setZIndex();
@@ -72,11 +91,7 @@ function Main() {
         naver.maps.Event.addDOMListener(mapRef.current, 'click', () => {
             setPosition({ lat: map.data.map.center.y, lng: map.data.map.center.x });
         });
-    }, []);
 
-    useEffect(() => {
-        // real  open api data
-        // console.log(apiData);
     }, [apiData]);
 
     useEffect(() => {
@@ -85,7 +100,7 @@ function Main() {
             setApiData((prev) => [...prev, ...ApiData]);
             setLoading(false);
         });
-    }, [position]);
+    }, []);
 
     return (
         <Page>

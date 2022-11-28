@@ -11,7 +11,7 @@ const getCloseSpot = (current_position) => {
     return SpotList.sort(function (a, b) {
         return a.distance - b.distance;
     })
-        .slice(0, 5)
+        .slice(0, 50)
         .filter((e) => !e.check);
 };
 
