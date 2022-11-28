@@ -12,7 +12,7 @@ const Charge = () => {
                 </div>
                 <Item>
                     <h1>주차장명 : </h1>
-                    <input type="text" />
+                    <input type="text" value="" />
                 </Item>
                 <Item>
                     <h1>이용날짜 : </h1>
@@ -38,6 +38,7 @@ const Charge = () => {
                 <Item_fee>
                     <h1>이용요금 : </h1>
                     <div className="total_fee"></div>
+                    <button>계산</button>
                 </Item_fee>
             </ChargePageStyle>
         </ChargeSection>

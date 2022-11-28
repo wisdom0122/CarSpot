@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import redIcon from '../images/car_mark_red.png';
 import yellowIcon from '../images/car_mark_yellow.png';
@@ -15,10 +15,7 @@ import '../infowindow/infowindow.css';
 
 const setMultipleMarkers = (naver, storeMarkers, storeInfoWindows, map) => {
     for (let key = 0; key < SpotList.length; key++) {
-        let position = new naver.maps.LatLng(
-            SpotList[key].lat,
-            SpotList[key].lng
-        );
+        let position = new naver.maps.LatLng(SpotList[key].lat, SpotList[key].lng);
 
         let marker = new naver.maps.Marker({
             map: map,
@@ -50,6 +47,9 @@ const setMultipleMarkers = (naver, storeMarkers, storeInfoWindows, map) => {
                 '</div>',
                 '</div>',
             ].join(''),
+            icon: {
+                url: markerIcon,
+            },
         });
 
         marker.setIcon(markerIcon);
@@ -80,11 +80,15 @@ function Main() {
     //map 중심 좌표(position)에 따라 가까운 spot api data 요청함
     const [visible, setVisible] = useState(false);
     const [apiData, setApiData] = useState([]);
+    const [name, setName] = useState();
     const [loading, setLoading] = useState(false);
-    const [position, setPosition] = useState({lat: 37.5005, lng: 127.038});
+    const [position, setPosition] = useState({ x: 37.5005, y: 127.038 });
+    useEffect(() => {
+        console.log(name);
+    }, [name]);
 
     useEffect(() => {
-        const {naver} = window;
+        const { naver } = window;
 
         const mapOptions = {
             center: new naver.maps.LatLng(37.540765, 126.946055), //지도 처음 위치
@@ -95,14 +99,10 @@ function Main() {
 
         // 다중 마커 표시
         for (let key = 0; key < SpotList.length; key++) {
-            let position = new naver.maps.LatLng(
-                SpotList[key].lat,
-                SpotList[key].lng
-            );
+            let position = new naver.maps.LatLng(SpotList[key].lat, SpotList[key].lng);
 
             // marker 색상 지정
-            const carMarkerIcon =
-                SpotList[key].id % 2 == 0 ? yellowIcon : greenIcon;
+            const carMarkerIcon = SpotList[key].id % 2 == 0 ? yellowIcon : greenIcon;
             const iconSize = new naver.maps.Size(30, 30);
 
             let marker = new naver.maps.Marker({
@@ -118,10 +118,7 @@ function Main() {
             console.log(iconSize.toString());
 
             let infoWindow = new naver.maps.InfoWindow({
-                content:
-                    '<div style="width:150px;text-align:center;padding:10px;">The Letter is <b>"' +
-                    key +
-                    '"</b>.</div>',
+                content: '<div style="width:150px;text-align:center;padding:10px;">The Letter is <b>"' + key + '"</b>.</div>',
             });
 
             storeMarkers.push(marker);
@@ -144,35 +141,27 @@ function Main() {
         };
 
         for (let i = 0; i < storeMarkers.length; i++) {
-            naver.maps.Event.addListener(
-                storeMarkers[i],
-                'click',
-                openInfoBox(i)
-            ); // 클릭한 마커 핸들러
+            naver.maps.Event.addListener(storeMarkers[i], 'click', openInfoBox(i)); // 클릭한 마커 핸들러
         }
 
         // setMultipleMarkers(naver, storeMarkers, storeInfoWindows, map);
 
         for (let i = 0; i < storeMarkers.length; i++) {
-            naver.maps.Event.addListener(
-                storeMarkers[i],
-                'click',
-                setInfoBox(storeMarkers, storeInfoWindows, map, i)
-            );
+            naver.maps.Event.addListener(storeMarkers[i], 'click', setInfoBox(storeMarkers, storeInfoWindows, map, i));
         }
 
         for (let i = 0; i < storeMarkers.length; i++) {
-            naver.maps.Event.addListener(
-                storeMarkers[i],
-                'click',
-                openInfoBox(i)
-            ); // 클릭한 마커 핸들러
+            naver.maps.Event.addListener(storeMarkers[i], 'click', openInfoBox(i)); // 클릭한 마커 핸들러
         }
     }, []);
 
     useEffect(() => {
+        // console.log(apiData);
+    }, [apiData]);
+
+    useEffect(() => {
         setLoading(true);
-        parkingApi.getDataFromApi(position, ({ApiData} = {}) => {
+        parkingApi.getDataFromApi(position, ({ ApiData } = {}) => {
             setApiData((prev) => [...prev, ...ApiData]);
             setLoading(false);
         });

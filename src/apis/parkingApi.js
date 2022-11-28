@@ -65,7 +65,7 @@ function xmlToJson(xml) {
 export const getDataFromApi = async (current_position, callback) => {
     const closeSpot = getCloseSpot(current_position);
     closeSpot.map((e) => (e.check = true));
-    console.log(closeSpot);
+    // console.log(closeSpot);
     try {
         await axios.all(closeSpot.map((L) => axios.get(`${baseURL}${L.spot}`))).then((res) => {
             let parser = new DOMParser();
@@ -75,7 +75,7 @@ export const getDataFromApi = async (current_position, callback) => {
             });
 
             callback({
-                ApiData: return_Data
+                ApiData: return_Data,
             });
         });
     } catch (error) {
