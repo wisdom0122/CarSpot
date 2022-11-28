@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import redIcon from "../images/car_mark_red.png"
+import yellowIcon from "../images/car_mark_yellow.png"
+import greenIcon from "../images/car_mark_green.png"
 import styled from "styled-components";
 
 import Charge from "../components/charge";
@@ -85,14 +88,23 @@ function Main() {
         SpotList[key].lng
       );
 
+      // marker 색상 지정
+      const iconColor = SpotList[key].id%2==0 ? redIcon : yellowIcon;
+      const iconSize = new naver.maps.Size(230, 230);
+
       let marker = new naver.maps.Marker({
         map: map,
         position: position,
         title: key,
         icon: {
-          url: icon, // 현재 사용 중인 마커 이미지
+          url: iconColor, // 현재 사용 중인 마커 이미지
+          size: new naver.maps.Size(230, 230),
+          origin: new naver.maps.Point(0, 0),
+          anchor: new naver.maps.Point(11, 35)
         },
       });
+      marker.setZIndex();
+      console.log(iconSize.toString());
 
       let infoWindow = new naver.maps.InfoWindow({
         content:
@@ -132,6 +144,10 @@ function Main() {
         "click",
         setInfoBox(storeMarkers, storeInfoWindows, map, i)
       );
+    }
+    
+    for (let i = 0; i < markers.length; i++) {
+      naver.maps.Event.addListener(markers[i], "click", openInfoBox(i)); // 클릭한 마커 핸들러
     }
   }, []);
 
