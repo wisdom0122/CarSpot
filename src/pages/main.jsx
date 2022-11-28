@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import Charge from '../components/charge';
 import Menu from '../components/menu';
@@ -20,13 +20,13 @@ function Main() {
     const [visible, setVisible] = useState(false);
     const [apiData, setApiData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [position, setPosition] = useState({ lng: 37.5005, lat: 127.038 });
+    const [position, setPosition] = useState({lng: 37.5005, lat: 127.038});
 
     useEffect(() => {
         // real  open api data
-        if(apiData.length ==0) return;
+        if (apiData.length == 0) return;
         console.log(apiData);
-        const { naver } = window;
+        const {naver} = window;
 
         const mapOptions = {
             center: new naver.maps.LatLng(37.540765, 126.946055), //지도 처음 위치
@@ -37,28 +37,30 @@ function Main() {
 
         // 다중 마커 표시
         for (let key = 0; key < apiData.length; key++) {
-            let position = new naver.maps.LatLng(apiData[key].LAT, apiData[key].LNG);
+            let position = new naver.maps.LatLng(
+                apiData[key].LAT,
+                apiData[key].LNG
+            );
 
             // marker 색상 지정
             // const carMarkerColor = apiData[key].CPCTY % 2 == 0 ? yellowCarMarker : greenCarMarker;
             // console.log("apiData[key].CUR_PRK_CNT: " + apiData[key].CUR_PRK_CNT);
             // console.log("apiData[key].CPCTY: " + apiData[key].CPCTY);
             // 혼잡도(현재 주차중인 차량)
-            const congestion = apiData[key].CUR_PRK_CNT/apiData[key].CPCTY*100;
+            const congestion =
+                (apiData[key].CUR_PRK_CNT / apiData[key].CPCTY) * 100;
             // console.log("congestion: " + congestion);
             const carMarker = (congestion) => {
-              let carMarkerColor = redCarMarker;
-            //   console.log("type: "+ typeof apiData[key].CUR_PRK_CNT);
-            //   console.log("typeChk: " + typeof apiData[key].CUR_PRK_CNT !== Object);
+                let carMarkerColor = redCarMarker;
+                //   console.log("type: "+ typeof apiData[key].CUR_PRK_CNT);
+                //   console.log("typeChk: " + typeof apiData[key].CUR_PRK_CNT !== Object);
                 if (congestion >= 50) {
                     carMarkerColor = greenCarMarker;
-                }
-                else if (congestion >= 30) {
+                } else if (congestion >= 30) {
                     carMarkerColor = yellowCarMarker;
-                }
-                else carMarkerColor = carMarkerColor;
-              return carMarkerColor;
-            }
+                } else carMarkerColor = carMarkerColor;
+                return carMarkerColor;
+            };
             const carMarkerSize = new naver.maps.Size(30, 30);
 
             let marker = new naver.maps.Marker({
@@ -72,7 +74,31 @@ function Main() {
             });
             marker.setZIndex();
 
-            let infoWindow = new naver.maps.InfoWindow({ content: Info.content.join('') });
+            let infoWindow = new naver.maps.InfoWindow({
+                content: [
+                    '<div class="InfoBox">',
+                    '<div class="PopDetail">',
+                    '<div class="InfoBoxHead">',
+                    `<h3>${apiData[key].PRK_NM}</h3>`,
+                    '</div>',
+                    '<div class="Container">',
+                    '<div class="Default">',
+                    '<div>02-1111-1111</div>',
+                    `<div>${apiData[key].ROAD_ADDR}</div>`,
+                    '</div>',
+                    '<div class="ParkingState">',
+                    '<div class="ParkingStateLeft">',
+                    '<div class="ParkingStateUp">전체 주차면</div>',
+                    `<div class="ParkingStateDown">${apiData[key].CPCTY}</div>`,
+                    '</div>',
+                    '<div class="ParkingStateRight">',
+                    '<div class="ParkingStateUp">주차 가능면</div>',
+                    `<div class="ParkingStateDown">${apiData[key].CUR_PRK_CNT}</div>`,
+                    '</div>',
+                    '</div>',
+                    '</div>',
+                ].join(''),
+            });
 
             const openInfoBox = (marker, infoWindow) => {
                 return function (e) {
@@ -85,18 +111,24 @@ function Main() {
                 };
             };
 
-            naver.maps.Event.addListener(marker, 'click', openInfoBox(marker, infoWindow)); // 클릭한 마커 핸들러
+            naver.maps.Event.addListener(
+                marker,
+                'click',
+                openInfoBox(marker, infoWindow)
+            ); // 클릭한 마커 핸들러
         }
 
         naver.maps.Event.addDOMListener(mapRef.current, 'click', () => {
-            setPosition({ lat: map.data.map.center.y, lng: map.data.map.center.x });
+            setPosition({
+                lat: map.data.map.center.y,
+                lng: map.data.map.center.x,
+            });
         });
-
     }, [apiData]);
 
     useEffect(() => {
         setLoading(true);
-        parkingApi.getDataFromApi(position, ({ ApiData } = {}) => {
+        parkingApi.getDataFromApi(position, ({ApiData} = {}) => {
             setApiData((prev) => [...prev, ...ApiData]);
             setLoading(false);
         });
