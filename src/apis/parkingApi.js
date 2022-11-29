@@ -10,9 +10,8 @@ const getCloseSpot = (current_position) => {
 
     return SpotList.sort(function (a, b) {
         return a.distance - b.distance;
-    })
-        .slice(0, 50)
-        .filter((e) => !e.check);
+    }).slice(0, 5);
+    //.filter((e) => !e.check);
 };
 
 function xmlToJson(xml) {
@@ -63,10 +62,9 @@ function xmlToJson(xml) {
 }
 
 export const getDataFromApi = async (current_position, callback) => {
-    //    / console.log(current_position);
     const closeSpot = getCloseSpot(current_position);
-    closeSpot.map((e) => (e.check = true));
-    // console.log(closeSpot);
+    //closeSpot.map((e) => (e.check = true));
+
     try {
         await axios.all(closeSpot.map((L) => axios.get(`${baseURL}${L.spot}`))).then((res) => {
             let parser = new DOMParser();

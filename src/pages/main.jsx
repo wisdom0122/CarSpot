@@ -1,17 +1,16 @@
-import {useEffect, useRef, useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Charge from '../components/charge';
 import Menu from '../components/menu';
 
-import Info from '../assets/marker_info.json';
+import loading from '../images/loading.gif';
 
 import * as parkingApi from '../apis/parkingApi.js';
-
-import redCarMarker from '../images/car_mark_red.png';
-import yellowCarMarker from '../images/car_mark_yellow.png';
-import greenCarMarker from '../images/car_mark_green.png';
+import * as controlMap from '../components/controlMap.js';
 
 import '../infowindow/infowindow.css';
+
+const { naver } = window;
 
 function Main() {
     const mapRef = useRef();
@@ -20,124 +19,34 @@ function Main() {
     const [visible, setVisible] = useState(false);
     const [apiData, setApiData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [position, setPosition] = useState({lng: 37.5005, lat: 127.038});
+    const [position, setPosition] = useState({ lat: 37.540765, lng: 126.946055 });
 
     useEffect(() => {
-        // real  open api data
-        // if (apiData.length == 0) return;
-        console.log(apiData);
-        const {naver} = window;
+        const map = controlMap.creatMap(mapRef, position);
 
-        const mapOptions = {
-            center: new naver.maps.LatLng(37.540765, 126.946055), //지도 처음 위치
-            zoom: 18,
-        };
-
-        const map = new naver.maps.Map(mapRef.current, mapOptions);
-
-        // 다중 마커 표시
-        for (let key = 0; key < apiData.length; key++) {
-            let position = new naver.maps.LatLng(
-                apiData[key].LAT,
-                apiData[key].LNG
-            );
-
-            // marker 색상 지정
-            // const carMarkerColor = apiData[key].CPCTY % 2 == 0 ? yellowCarMarker : greenCarMarker;
-            // console.log("apiData[key].CUR_PRK_CNT: " + apiData[key].CUR_PRK_CNT);
-            // console.log("apiData[key].CPCTY: " + apiData[key].CPCTY);
-            // 혼잡도(현재 주차중인 차량)
-            const congestion =
-                (apiData[key].CUR_PRK_CNT / apiData[key].CPCTY) * 100;
-            // console.log("congestion: " + congestion);
-            const carMarker = (congestion) => {
-                let carMarkerColor = redCarMarker;
-                //   console.log("type: "+ typeof apiData[key].CUR_PRK_CNT);
-                //   console.log("typeChk: " + typeof apiData[key].CUR_PRK_CNT !== Object);
-                if (congestion >= 50) {
-                    carMarkerColor = greenCarMarker;
-                } else if (congestion >= 30) {
-                    carMarkerColor = yellowCarMarker;
-                } else carMarkerColor = carMarkerColor;
-                return carMarkerColor;
-            };
-            const carMarkerSize = new naver.maps.Size(30, 30);
-
-            let marker = new naver.maps.Marker({
-                map: map,
-                position: position,
-                title: key,
-                icon: {
-                    url: carMarker(congestion),
-                    scaledSize: carMarkerSize,
-                },
-            });
-            marker.setZIndex();
-
-            let infoWindow = new naver.maps.InfoWindow({
-                content: [
-                    '<div class="InfoBox">',
-                    '<div class="PopDetail">',
-                    '<div class="InfoBoxHead">',
-                    `<h3>${apiData[key].PRK_NM}</h3>`,
-                    '</div>',
-                    '<div class="Container">',
-                    '<div class="Default">',
-                    '<div>02-1111-1111</div>',
-                    `<div>${apiData[key].ROAD_ADDR}</div>`,
-                    '</div>',
-                    '<div class="ParkingState">',
-                    '<div class="ParkingStateLeft">',
-                    '<div class="ParkingStateUp">전체 주차면</div>',
-                    `<div class="ParkingStateDown">${apiData[key].CPCTY}</div>`,
-                    '</div>',
-                    '<div class="ParkingStateRight">',
-                    '<div class="ParkingStateUp">주차 가능면</div>',
-                    `<div class="ParkingStateDown">${apiData[key].CUR_PRK_CNT}</div>`,
-                    '</div>',
-                    '</div>',
-                    '<div class="PayInfo">',
-                    `<div>요금 정보</div>`,
-                    `<div> 기본 요금(시간) : ${apiData[key].RATES}원/${apiData[key].TIME_RATES}분</div>`,
-                    `<div> 추가 요금(시간) : ${apiData[key].RATES}원/${apiData[key].TIME_RATES}분</div>`,
-                    '</div>',
-                    '</div>',
-                ].join(''),
-            });
-
-            const openInfoBox = (marker, infoWindow) => {
-                return function (e) {
-                    if (infoWindow.getMap()) {
-                        infoWindow.close();
-                    } else {
-                        infoWindow.open(map, marker);
-                        map.setCenter(marker.getPosition()); // 화면의 중심점을 클릭한 마커로 변경한다.
-                    }
-                };
-            };
-
-            naver.maps.Event.addListener(
-                marker,
-                'click',
-                openInfoBox(marker, infoWindow)
-            ); // 클릭한 마커 핸들러
-        }
-
-        naver.maps.Event.addDOMListener(mapRef.current, 'click', () => {
+        //맵 중심 좌표 이동 드래그 이벤트 등록
+        naver.maps.Event.addListener(map, 'dragend', () => {
             setPosition({
                 lat: map.data.map.center.y,
                 lng: map.data.map.center.x,
             });
         });
+    }, []);
+    useEffect(() => {
+        const map = controlMap.creatMap(mapRef);
+        controlMap.createMaker(apiData);
     }, [apiData]);
 
     useEffect(() => {
+        console.log(position);
         setLoading(true);
-        parkingApi.getDataFromApi(position, ({ApiData} = {}) => {
-            setApiData((prev) => [...prev, ...ApiData]);
+        parkingApi.getDataFromApi(position, ({ ApiData } = {}) => {
+            setApiData((prev) => [prev, ...ApiData]);
             setLoading(false);
         });
-    }, []);
+
+        controlMap.ChangeCenterMaker(position);
+    }, [position]);
 
     return (
         <Page>
@@ -146,9 +55,21 @@ function Main() {
             {visible && <Charge />}
             <Map ref={mapRef}></Map>
             <h5>공영주차장 정보안내시스템</h5>
+            {loading ? <Roading></Roading> : ''}
         </Page>
     );
 }
+const Roading = styled.div`
+    background: url(${loading});
+    position: fixed;
+    z-index: 10;
+    left: 50%;
+    top: calc(50% - 64px);
+    width: 64px;
+    height: 64px;
+
+    margin: 15px;
+`;
 
 const Page = styled.div`
     scrollbar-width: none;
