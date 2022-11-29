@@ -24,7 +24,7 @@ function Main() {
 
     useEffect(() => {
         // real  open api data
-        if (apiData.length == 0) return;
+        // if (apiData.length == 0) return;
         console.log(apiData);
         const {naver} = window;
 
@@ -95,6 +95,11 @@ function Main() {
                     '<div class="ParkingStateUp">주차 가능면</div>',
                     `<div class="ParkingStateDown">${apiData[key].CUR_PRK_CNT}</div>`,
                     '</div>',
+                    '</div>',
+                    '<div class="PayInfo">',
+                    `<div>요금 정보</div>`,
+                    `<div> 기본 요금(시간) : ${apiData[key].RATES}원/${apiData[key].TIME_RATES}분</div>`,
+                    `<div> 추가 요금(시간) : ${apiData[key].RATES}원/${apiData[key].TIME_RATES}분</div>`,
                     '</div>',
                     '</div>',
                 ].join(''),
