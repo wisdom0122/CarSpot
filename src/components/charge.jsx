@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import cash from '../images/fee_icon.png';
 
-const Charge = () => {
+const Charge = ({ name }) => {
+    useEffect(() => {
+        setInputValue('');
+    }, [name]);
+    const [inputValue, setInputValue] = useState('');
+    const [feeValue, setFeeValue] = useState('');
+    console.log(inputValue);
+    console.log(name.RATES);
+    console.log(inputValue * name.RATES);
+    const onChange = (e) => {
+        setInputValue(e.target.value);
+    };
+    const onClick = (e) => {
+        setFeeValue(inputValue * name.RATES);
+    };
+
     return (
         <ChargeSection>
             <ChargePageStyle>
@@ -12,7 +27,7 @@ const Charge = () => {
                 </div>
                 <Item>
                     <h1>주차장명 : </h1>
-                    <input type="text" value="" />
+                    <input type="text" value={name.PRK_NM} />
                 </Item>
                 <Item>
                     <h1>이용날짜 : </h1>
@@ -20,7 +35,7 @@ const Charge = () => {
                 </Item>
                 <Item>
                     <h1>이용시간 : </h1>
-                    <input type="time" />
+                    <input onChange={onChange} value={inputValue} type="text" placeholder="이용시간을 입력해주세요" />
                 </Item>
                 <Item_smallCar>
                     <h2>경차 요금할인 </h2>
@@ -37,17 +52,13 @@ const Charge = () => {
                 </Item_smallCar>
                 <Item_fee>
                     <h1>이용요금 : </h1>
-                    <div className="total_fee"></div>
-                    <button>계산</button>
+                    <div className="total_fee">{feeValue}</div>
+                    <button onClick={onClick}>계산</button>
                 </Item_fee>
             </ChargePageStyle>
         </ChargeSection>
     );
 };
-
-// const test = (fee) => {
-//   console.log("fee", fee * 0.5);
-// };
 
 const ChargeSection = styled.div`
     background-color: #f5efe6;
@@ -93,6 +104,7 @@ const Item = styled.div`
     justify-content: center;
     align-items: center;
     border-bottom: 1px solid white;
+
     h1 {
         font-size: 20px;
         margin-right: 15px;
@@ -102,6 +114,9 @@ const Item = styled.div`
         width: 150px;
         border-radius: 5px;
         border: none;
+        ::placeholder {
+            text-align: center;
+        }
     }
     h2 {
         font-size: 20px;
@@ -124,9 +139,18 @@ const Item_fee = styled.div`
     }
     .total_fee {
         height: 30px;
-        width: 150px;
+        width: 110px;
         border-radius: 5px;
         background-color: white;
+    }
+    button {
+        margin-left: 10px;
+        background-color: #6b97bc;
+        border: none;
+        width: 45px;
+        height: 25px;
+        font-size: 15px;
+        font-weight: 600;
     }
 `;
 
@@ -162,8 +186,8 @@ const Item_smallCar = styled.div`
             }
             input {
                 margin-top: 5px;
-                width: 23px;
-                height: 23px;
+                width: 20px;
+                height: 20px;
             }
         }
     }

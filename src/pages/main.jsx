@@ -22,9 +22,13 @@ function Main() {
     const [visible, setVisible] = useState(false);
     const [apiData, setApiData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [number, setnumber] = useState();
+    const [name, setname] = useState([]);
     const [position, setPosition] = useState({ lng: 37.5005, lat: 127.038 });
 
     useEffect(() => {
+        if (apiData.length == 0) return;
+
         const { naver } = window;
 
         const mapOptions = {
@@ -35,11 +39,11 @@ function Main() {
         const map = new naver.maps.Map(mapRef.current, mapOptions);
 
         // 다중 마커 표시
-        for (let key = 0; key < SpotList.length; key++) {
-            let position = new naver.maps.LatLng(SpotList[key].lat, SpotList[key].lng);
+        for (let key = 0; key < apiData.length; key++) {
+            let position = new naver.maps.LatLng(apiData[key].LAT, apiData[key].LNG);
 
             // marker 색상 지정
-            const carMarkerIcon = SpotList[key].id % 2 == 0 ? yellowIcon : greenIcon;
+            const carMarkerIcon = apiData[key].id % 2 == 0 ? yellowIcon : greenIcon;
             const iconSize = new naver.maps.Size(30, 30);
 
             let marker = new naver.maps.Marker({
@@ -47,7 +51,7 @@ function Main() {
                 position: position,
                 title: key,
                 icon: {
-                    url: carMarkerIcon,
+                    url: greenIcon,
                     scaledSize: iconSize,
                 },
             });
@@ -55,8 +59,13 @@ function Main() {
 
             let infoWindow = new naver.maps.InfoWindow({ content: Info.content.join('') });
 
-            const openInfoBox = (marker, infoWindow) => {
+            const openInfoBox = (marker, infoWindow, value) => {
                 return function (e) {
+                    // // console.log(e);
+                    // console.log('vlaie');
+                    console.log(value.PRK_NM);
+                    setname(value);
+
                     if (infoWindow.getMap()) {
                         infoWindow.close();
                     } else {
@@ -66,17 +75,12 @@ function Main() {
                 };
             };
 
-            naver.maps.Event.addListener(marker, 'click', openInfoBox(marker, infoWindow)); // 클릭한 마커 핸들러
+            naver.maps.Event.addListener(marker, 'click', openInfoBox(marker, infoWindow, apiData[key])); // 클릭한 마커 핸들러
         }
 
         naver.maps.Event.addDOMListener(mapRef.current, 'click', () => {
             setPosition({ lat: map.data.map.center.y, lng: map.data.map.center.x });
         });
-    }, []);
-
-    useEffect(() => {
-        // real  open api data
-        // console.log(apiData);
     }, [apiData]);
 
     useEffect(() => {
@@ -85,13 +89,13 @@ function Main() {
             setApiData((prev) => [...prev, ...ApiData]);
             setLoading(false);
         });
-    }, [position]);
+    }, []);
 
     return (
         <Page>
             <Menu setVisible={setVisible} />
 
-            {visible && <Charge />}
+            {visible && <Charge name={name} />}
             <Map ref={mapRef}></Map>
             <h5>공영주차장 정보안내시스템</h5>
         </Page>
@@ -105,8 +109,6 @@ const Page = styled.div`
     padding: 0;
     width: 100%;
     height: 100%;
-    /* width: 100vw; */
-    /* height: 100vh; */
     display: flex;
     flex-direction: row;
     h5 {
@@ -127,7 +129,7 @@ const Map = styled.div`
     padding: 0;
     flex-grow: 1;
     height: 100vh;
-    :focus {
+    &:focus {
         outline: none;
     }
 `;
