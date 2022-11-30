@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState } from 'react';
 import SpotList from '../assets/spotList.json';
-
+//
 const Key = process.env.REACT_APP_SPOT_KEY;
 const baseURL = process.env.REACT_APP_SPOT_ROOT + Key + process.env.REACT_APP_SPOT_ARG;
 
