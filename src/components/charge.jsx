@@ -3,9 +3,7 @@ import styled from 'styled-components';
 import cash from '../images/fee_icon.png';
 
 const Charge = ({ name }) => {
-    useEffect(() => {
-        setInputValue('');
-    }, [name]);
+    const [discount, setDiscount] = useState(1);
     const [inputValue, setInputValue] = useState('');
     const [feeValue, setFeeValue] = useState('');
     console.log(inputValue);
@@ -15,8 +13,12 @@ const Charge = ({ name }) => {
         setInputValue(e.target.value);
     };
     const onClick = (e) => {
-        setFeeValue(inputValue * name.RATES);
+        setFeeValue(inputValue * name.RATES * discount);
     };
+
+    useEffect(() => {
+        setInputValue('');
+    }, [name]);
 
     return (
         <ChargeSection>
@@ -35,19 +37,33 @@ const Charge = ({ name }) => {
                 </Item>
                 <Item>
                     <h1>이용시간 : </h1>
-                    <input onChange={onChange} value={inputValue} type="text" placeholder="이용시간을 입력해주세요" />
+                    <input onChange={onChange} value={inputValue} type="text" placeholder="이용" />
                 </Item>
                 <Item_smallCar>
                     <h2>경차 요금할인 </h2>
                     <div class="smallCar">
                         <div class="smallCar_content">
-                            <h3>해당O</h3>
-                            <input type="radio" name="discount" />
+                            <h3>해당</h3>
+                            <label for="discount" className="discountBox">
+                                <input
+                                    type="checkbox"
+                                    name="discount"
+                                    onClick={() => {
+                                        setDiscount(0.5);
+                                    }}
+                                />
+                            </label>
                         </div>
-                        <div class="smallCar_content">
+                        {/* <div class="smallCar_content">
                             <h3>해당X</h3>
-                            <input type="radio" name="discount" />
-                        </div>
+                            <input
+                                type="radio"
+                                name="discount"
+                                onClick={() => {
+                                    setDiscount(1);
+                                }}
+                            />
+                        </div> */}
                     </div>
                 </Item_smallCar>
                 <Item_fee>
@@ -61,16 +77,19 @@ const Charge = ({ name }) => {
 };
 
 const ChargeSection = styled.div`
-    background-color: #f5efe6;
+    z-index: 20;
+    border-radius: 15px;
+    position: fixed;
+    left: 110px;
+    top: 10px;
+    background-color: #fff;
     opacity: 0.8;
-    height: 100vh;
-    width: 300px; ;
+    border: 1px solid #000;
+    padding: 10px;
 `;
 
 const ChargePageStyle = styled.div`
-    background-color: #aebdca;
-    margin-top: 150px;
-    width: 300px;
+    background-color: #fff;
     font-weight: bold;
     text-align: center;
     justify-content: center;
@@ -81,10 +100,10 @@ const ChargePageStyle = styled.div`
         height: 60px;
         justify-content: center;
         align-items: center;
-        border-bottom: 3px solid white;
+        /* border-bottom: 1px dotted gray; */
         h1 {
             margin-left: 10px;
-            font-size: 30px;
+            font-size: 28px;
             font-weight: bold;
         }
         img {
@@ -158,31 +177,35 @@ const Item_smallCar = styled.div`
     display: flex;
     flex-direction: row;
     font-size: 20px;
-    height: 70px;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
+    height: 50px;
     border-bottom: 1px solid white;
     h2 {
+        padding-left: 20px;
         font-size: 20px;
-        width: 150px;
+        width: 60%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
     }
     .smallCar {
-        height: 70px;
+        height: 50px;
         display: flex;
-        flex-grow: 1;
-
+        width: 40%;
         .smallCar_content {
             display: flex;
-            flex-direction: column;
-            flex-grow: 1;
+            flex-direction: row;
             justify-content: center;
             align-items: center;
-            border-left: 1px solid white;
+            height: 50px;
+            width: 100%;
+            .discountBox {
+                color: red;
+            }
             h3 {
-                margin: 0;
-                font-size: 18px;
-                font-weight: 500;
+                font-size: 20px;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
             }
             input {
                 margin-top: 5px;
