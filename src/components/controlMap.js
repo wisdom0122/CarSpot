@@ -34,7 +34,7 @@ export const creatMap = (mapRef) => {
 // 전에 수신한 데이터를 제거하고 새로 수신한 데이터로 마커를 재생성중임.
 // 수신한 데이터를 보존하고 좌표값으로 가장 가까운곳을 계산해 마커를 찍는 방법이 필요
 // 11/29 jin
-export const createMaker = (apiData) => {
+export const createMaker = (apiData, setName) => {
     //모든 marker 를 닫고 maker정보를 날림
     for (let index = 0; index < markers.length; index++) {
         infos[index].close();
@@ -110,8 +110,9 @@ export const createMaker = (apiData) => {
     }
 
     //마커 클릭 이벤트를 등록함
-    const openInfoBox = (marker, infoWindow) => {
+    const openInfoBox = (marker, infoWindow, value) => {
         return function () {
+            setName(value);
             if (infoWindow.getMap()) {
                 infoWindow.close();
             } else {
@@ -122,7 +123,7 @@ export const createMaker = (apiData) => {
     };
 
     for (let index = 0; index < markers.length; index++) {
-        naver.maps.Event.addListener(markers[index], 'click', openInfoBox(markers[index], infos[index])); // 클릭한 마커 핸들러
+        naver.maps.Event.addListener(markers[index], 'click', openInfoBox(markers[index], infos[index], apiData[index])); // 클릭한 마커 핸들러
     }
 };
 

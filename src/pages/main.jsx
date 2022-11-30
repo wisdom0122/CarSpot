@@ -19,7 +19,8 @@ function Main() {
     const [visible, setVisible] = useState(false);
     const [apiData, setApiData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [position, setPosition] = useState({ lat: 37.540765, lng: 126.946055 });
+    const [name, setName] = useState([]);
+    const [position, setPosition] = useState({ lng: 37.5005, lat: 127.038 });
 
     useEffect(() => {
         const map = controlMap.creatMap(mapRef, position);
@@ -34,7 +35,7 @@ function Main() {
     }, []);
     useEffect(() => {
         const map = controlMap.creatMap(mapRef);
-        controlMap.createMaker(apiData);
+        controlMap.createMaker(apiData, setName);
     }, [apiData]);
 
     useEffect(() => {
@@ -52,7 +53,7 @@ function Main() {
         <Page>
             <Menu setVisible={setVisible} />
 
-            {visible && <Charge />}
+            {visible && <Charge name={name} />}
             <Map ref={mapRef}></Map>
             <h5>공영주차장 정보안내시스템</h5>
             {loading ? <Roading></Roading> : ''}
@@ -78,8 +79,6 @@ const Page = styled.div`
     padding: 0;
     width: 100%;
     height: 100%;
-    /* width: 100vw; */
-    /* height: 100vh; */
     display: flex;
     flex-direction: row;
     h5 {
@@ -100,7 +99,7 @@ const Map = styled.div`
     padding: 0;
     flex-grow: 1;
     height: 100vh;
-    :focus {
+    &:focus {
         outline: none;
     }
 `;
