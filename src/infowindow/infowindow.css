@@ -1,97 +1,97 @@
 .InfoBox {
-    position: absolute;
-    left: 0;
-    top: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .PopDetail {
-    position: relative;
-    width: 300px;
-    height: 380px;
-    color: #555;
-    background: #fff;
+  position: relative;
+  width: 300px;
+  height: 380px;
+  color: #555;
+  background: #fff;
 }
 
 .InfoBoxHead {
-    position: relative;
-    height: 40px;
-    background-color: #f7fcff;
-    border-bottom: 1px solid #014b7c;
+  position: relative;
+  height: 40px;
+  background-color: #f7fcff;
+  border-bottom: 1px solid #014b7c;
 }
 
 .InfoBoxHead h3 {
-    color: #1573b3;
-    font-size: 16px;
-    padding-left: 20px;
+  color: #1573b3;
+  font-size: 16px;
+  padding-left: 20px;
 }
 
 .Container {
-    padding: 15px 20px 35px;
+  padding: 15px 20px 35px;
 }
 
 .Default {
-    display: block;
-    margin: 6px 0;
+  display: block;
+  margin: 6px 0;
 }
 
 .Default div {
-    margin: 6px 0;
-    font-size: 12px;
+  margin: 6px 0;
+  font-size: 12px;
 }
 
 .ParkingState {
-    margin-top: 10px;
-    height: 53px;
-    width: 100%;
+  margin-top: 10px;
+  height: 53px;
+  width: 100%;
 }
 
 .ParkingStateLeft {
-    float: left;
-    background: url('../images/parkingState.gif');
-    width: 127px;
-    height: 53px;
+  float: left;
+  background: url("../assets/images/parkingState.gif");
+  width: 127px;
+  height: 53px;
 }
 
 .ParkingStateRight {
-    float: right;
-    background: url('../images/parkingState.gif');
-    width: 127px;
-    height: 53px;
+  float: right;
+  background: url("../assets/images/parkingState.gif");
+  width: 127px;
+  height: 53px;
 }
 
 .ParkingStateUp {
-    line-height: 28px;
-    display: block;
-    text-align: center;
-    font-size: 12px;
+  line-height: 28px;
+  display: block;
+  text-align: center;
+  font-size: 12px;
 }
 
 .ParkingStateDown {
-    line-height: 25px;
-    color: #fff;
-    font-size: 16px;
-    font-weight: bold;
-    display: block;
-    text-align: center;
+  line-height: 25px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  display: block;
+  text-align: center;
 }
 
 .PayInfo {
-    border-top: 0;
-    overflow: hidden;
-    padding: 15px 0;
+  border-top: 0;
+  overflow: hidden;
+  padding: 15px 0;
 }
 
 .PayInfo div:first-child {
-    font-weight: bold;
-    font-size: 12px;
-    line-height: 17px;
-    padding-bottom: 3px;
-    padding-left: 0px;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 17px;
+  padding-bottom: 3px;
+  padding-left: 0px;
 }
 
 .PayInfo div {
-    font-size: 12px;
-    line-height: 17px;
-    padding-bottom: 3px;
-    padding-left: 10px;
+  font-size: 12px;
+  line-height: 17px;
+  padding-bottom: 3px;
+  padding-left: 10px;
 }
