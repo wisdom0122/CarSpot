@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import cash from '../images/fee_icon.png';
-
+//
 const Charge = () => {
     return (
         <ChargeSection>
