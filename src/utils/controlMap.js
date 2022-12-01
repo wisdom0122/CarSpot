@@ -2,31 +2,47 @@ import redCarMarker from "../assets/images/car_mark_red.png";
 import yellowCarMarker from "../assets/images/car_mark_yellow.png";
 import greenCarMarker from "../assets/images/car_mark_green.png";
 import centermarker from "../assets/images/centermarker.png";
+import { Constants } from "../constants";
+import { createMarker, clearMarkers } from "../services/mapService";
 
 const { naver } = window;
 let map;
-let centerMaker;
+let centerMarker;
 let markers = [];
 let infos = [];
 
+const mapLeftClickHandler = () => {
+  //선택된 마커들 선택 해제
+};
+
+const mapDragEndHandler = (map, setPosition) => {
+  naver.maps.Event.addListener(map, "dragend", () => {
+    setPosition({
+      lat: map.data.map.center.y,
+      lng: map.data.map.center.x,
+    });
+  });
+};
+
 //naver map을 생성하거나 return 해줌
-export const creatMap = (mapRef) => {
+export const createMap = (mapRef) => {
   if (map == null) {
     const mapOptions = {
-      center: new naver.maps.LatLng(37.540765, 126.946055), //지도 처음 위치
-      zoom: 18,
+      center: Constants.initLocation,
+      zoom: Constants.initZoom,
     };
 
     map = new naver.maps.Map(mapRef.current, mapOptions);
 
-    centerMaker = new naver.maps.Marker({
-      position: new naver.maps.LatLng(37.540765, 126.946055),
-      map: map,
-      icon: {
-        url: centermarker,
-      },
+    mapLeftClickHandler(mapRef);
+
+    mapDragEndHandler(mapRef);
+
+    centerMarker = createMarker(map, Constants.initLocation, {
+      url: centermarker,
     });
   }
+
   return map;
 };
 
@@ -36,12 +52,10 @@ export const creatMap = (mapRef) => {
 // 11/29 jin
 export const createMaker = (apiData, setName) => {
   //모든 marker 를 닫고 maker정보를 날림
-  for (let index = 0; index < markers.length; index++) {
-    infos[index].close();
-    markers[index].setMap(null);
-  }
-  markers = [];
-  infos = [];
+  clearMarkers(infos, markers);
+
+  // markers = [];
+  // infos = [];
 
   //api data 로 마커를 찍음
   for (let key = 0; key < apiData.length; key++) {
@@ -49,11 +63,9 @@ export const createMaker = (apiData, setName) => {
 
     // marker 색상 지정  혼잡도(현재 주차중인 차량)
     const congestion = (apiData[key].CUR_PRK_CNT / apiData[key].CPCTY) * 100;
-    // console.log("congestion: " + congestion);
     const carMarker = (congestion) => {
       let carMarkerColor = redCarMarker;
-      //   console.log("type: "+ typeof apiData[key].CUR_PRK_CNT);
-      //   console.log("typeChk: " + typeof apiData[key].CUR_PRK_CNT !== Object);
+
       if (congestion >= 50) {
         carMarkerColor = greenCarMarker;
       } else if (congestion >= 30) {
@@ -131,6 +143,6 @@ export const createMaker = (apiData, setName) => {
   }
 };
 
-export const ChangeCenterMaker = (position) => {
-  centerMaker.setPosition(position);
+export const ChangeCenterMarker = (position) => {
+  centerMarker.setPosition(position);
 };

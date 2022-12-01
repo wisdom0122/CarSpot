@@ -71,7 +71,6 @@ export const getDataFromApi = async (current_position, callback) => {
   const closeSpot = getCloseSpot(current_position);
   //closeSpot.map((e) => (e.check = true));
 
-  console.log("tr", `${baseURL}`);
   try {
     await axios
       .all(closeSpot.map((L) => axios.get(`${baseURL}${L.spot}`)))

@@ -6,9 +6,6 @@ const Charge = ({ name }) => {
   const [discount, setDiscount] = useState(1);
   const [inputValue, setInputValue] = useState("");
   const [feeValue, setFeeValue] = useState("");
-  console.log(inputValue);
-  console.log(name.RATES);
-  console.log(inputValue * name.RATES);
   const onChange = (e) => {
     setInputValue(e.target.value);
   };

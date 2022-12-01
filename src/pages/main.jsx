@@ -6,11 +6,7 @@ import Menu from "../components/menu";
 import loading from "../assets/images/loading.gif";
 
 import * as parkingApi from "../apis/parkingApi.js";
-import * as controlMap from "../components/controlMap.js";
-
-import "../infowindow/infowindow.css";
-
-const { naver } = window;
+import * as controlMap from "../utils/controlMap";
 
 function Main() {
   const mapRef = useRef();
@@ -23,30 +19,21 @@ function Main() {
   const [position, setPosition] = useState({ lng: 37.5005, lat: 127.038 });
 
   useEffect(() => {
-    const map = controlMap.creatMap(mapRef, position);
-
-    //맵 중심 좌표 이동 드래그 이벤트 등록
-    naver.maps.Event.addListener(map, "dragend", () => {
-      setPosition({
-        lat: map.data.map.center.y,
-        lng: map.data.map.center.x,
-      });
-    });
+    const map = controlMap.createMap(mapRef);
   }, []);
+
   useEffect(() => {
-    const map = controlMap.creatMap(mapRef);
     controlMap.createMaker(apiData, setName);
   }, [apiData]);
 
   useEffect(() => {
-    console.log(position);
     setLoading(true);
     parkingApi.getDataFromApi(position, ({ ApiData } = {}) => {
       setApiData((prev) => [prev, ...ApiData]);
       setLoading(false);
     });
 
-    controlMap.ChangeCenterMaker(position);
+    // controlMap.ChangeCenterMarker(position);
   }, [position]);
 
   return (
