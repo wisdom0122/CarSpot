@@ -1,6 +1,8 @@
+import { createInfoWindow } from '../services/mapService';
+
 const InfoWindow = (naver) => {
-    let infoWindow = new naver.maps.InfoWindow({
-        content: [
+    let infoWindow = createInfoWindow(
+        [
             '<div class="InfoBox">',
             '<div class="PopDetail">',
             '<div class="InfoBoxHead">',
@@ -22,8 +24,8 @@ const InfoWindow = (naver) => {
             '</div>',
             '</div>',
             '</div>',
-        ].join(''),
-    });
+        ].join('')
+    );
 };
 
 export default InfoWindow;

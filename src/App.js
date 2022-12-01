@@ -1,13 +1,11 @@
-import Charge from './components/charge';
-import Main from './pages/main';
+import Main from "./pages/main";
 
 function App() {
-    return (
-        <div>
-            <Main />
-            {/* <Charge /> */}
-        </div>
-    );
+  return (
+    <div>
+      <Main />
+    </div>
+  );
 }
 
 export default App;
