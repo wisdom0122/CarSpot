@@ -1,18 +1,19 @@
 import redCarMarker from '../assets/images/car_mark_red.png';
 import yellowCarMarker from '../assets/images/car_mark_yellow.png';
 import greenCarMarker from '../assets/images/car_mark_green.png';
-import centermarker from '../assets/images/centermarker.png';
-import { Constants } from '../constants';
-import { createMarker, clearMarkers, createInfoWindow } from '../services/mapService';
+import centerCarMarker from '../assets/images/centermarker.png';
+import { Constants } from './constants/map';
+import { createMarker, clearMarkers, createInfoWindow } from './mapService';
 
 const { naver } = window;
 let map;
 let centerMarker;
 let markers = [];
 let infos = [];
+let listeners = [];
 
 //naver map을 생성하거나 return 해줌
-export const createMap = (mapRef) => {
+export const createMap = (mapRef, setPosition) => {
     if (map == null) {
         const mapOptions = {
             center: Constants.initLocation,
@@ -21,28 +22,18 @@ export const createMap = (mapRef) => {
 
         map = new naver.maps.Map(mapRef.current, mapOptions);
 
-        mapLeftClickHandler(mapRef);
+        mapDragEndHandler(map, setPosition);
 
-        mapDragEndHandler(mapRef);
-
-        centerMarker = createMarker(map, Constants.initLocation, {
-            url: centermarker,
-        });
+        centerMarker = createMarker(map, Constants.initLocation, centerCarMarker);
     }
 
     return map;
 };
 
-// 수신한 데이터로 마커를 생성함
-// 전에 수신한 데이터를 제거하고 새로 수신한 데이터로 마커를 재생성중임.
-// 수신한 데이터를 보존하고 좌표값으로 가장 가까운곳을 계산해 마커를 찍는 방법이 필요
 // 11/29 jin
-export const createMaker = (apiData, setName) => {
+export const createMaker = (apiData, setSpotData) => {
     //모든 marker 를 닫고 maker정보를 날림
-    clearMarkers(infos, markers);
-
-    // markers = [];
-    // infos = [];
+    [infos, markers, listeners] = clearMarkers(infos, markers, listeners);
 
     //api data 로 마커를 찍음
     for (let key = 0; key < apiData.length; key++) {
@@ -52,7 +43,7 @@ export const createMaker = (apiData, setName) => {
         const congestion = (apiData[key].CUR_PRK_CNT / apiData[key].CPCTY) * 100;
         const carMarkerSize = new naver.maps.Size(30, 30);
 
-        const marker = createMarker(map, position, key, {
+        const marker = createMarker(map, position, {
             url: carMarker(congestion),
             scaledSize: carMarkerSize,
         });
@@ -63,30 +54,17 @@ export const createMaker = (apiData, setName) => {
         infos.push(infoWindow);
     }
 
-    //마커 클릭 이벤트를 등록함
-    const openInfoBox = (marker, infoWindow, value) => {
-        return function () {
-            setName(value);
-            if (infoWindow.getMap()) {
-                infoWindow.close();
-            } else {
-                infoWindow.open(map, marker);
-                map.setCenter(marker.getPosition()); // 화면의 중심점을 클릭한 마커로 변경한다.
-            }
-        };
-    };
-
     for (let index = 0; index < markers.length; index++) {
-        naver.maps.Event.addListener(markers[index], 'click', openInfoBox(markers[index], infos[index], apiData[index], setName)); // 클릭한 마커 핸들러
+        listeners[index] = naver.maps.Event.addListener(
+            markers[index],
+            'click',
+            openInfoBox(markers[index], infos[index], apiData[index], setSpotData)
+        ); // 클릭한 마커 핸들러
     }
 };
 
 export const ChangeCenterMarker = (position) => {
     centerMarker.setPosition(position);
-};
-
-const mapLeftClickHandler = () => {
-    //선택된 마커들 선택 해제
 };
 
 const mapDragEndHandler = (map, setPosition) => {
@@ -98,9 +76,10 @@ const mapDragEndHandler = (map, setPosition) => {
     });
 };
 
-const openInfoBox = (marker, infoWindow, value, setName) => {
+const openInfoBox = (marker, infoWindow, value, setSpotData) => {
     return function () {
-        setName(value);
+        setSpotData(value);
+
         if (infoWindow.getMap()) {
             infoWindow.close();
         } else {
