@@ -1,11 +1,10 @@
 const { naver } = window;
 
-export const createMarker = (mapRef, position, title, icon) => {
+export const createMarker = (map, position, icon) => {
     return new naver.maps.Marker({
-        mapRef,
-        position,
-        title,
-        icon,
+        map: map,
+        position: position,
+        icon: icon,
     });
 };
 
@@ -18,11 +17,13 @@ export const createImageIcon = (imageUrl, scaledSize) => {
     });
 };
 
-export const clearMarkers = (infos, markers) => {
+export const clearMarkers = (infos, markers, listeners) => {
     for (let index = 0; index < markers.length; index++) {
+        naver.maps.Event.removeListener(listeners[index]);
         infos[index].close();
         markers[index].setMap(null);
     }
+    return [[], [], []];
 };
 
 export const createInfoWindow = (content) => {
